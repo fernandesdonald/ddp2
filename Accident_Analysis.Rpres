@@ -1,0 +1,90 @@
+Project Assignment: Developing Data Science Products
+========================================================
+author: Donald Fernandes
+date: `r date()`
+autosize: true
+
+ASSIGNMENT PROJECT DETAILS
+========================================================
+  
+* Functionality: Interactive application to compute and display key Six Metrics by State    
+* Application developed using Shiny and RStudio framework, using data sourced from CalPoly.edu  
+* Data is a set of Highway Accident events, occured during 2007 within United States  
+* Data has Location,Time dimensions, and includes multiple variables like Speed Limit, Predestrians, etc  
+* Published on ShinyApps.io [here] (https://fremontee.shinyapps.io/Accident_Analysis/) 
+* Application Source Code on Github [here] (https://github.com/fernandesdonald/ddp2)
+* R Presentation Source Code on Github [here] (https://github.com/fernandesdonald/ddp2/Accident_Analysis.Rpres)
+* Next Version of the Application will also include:   
+** Increased Graphical Interactivity  
+** Near-real time data using WebService, plus additional and recent date sources  
+** Prediction for Highway Accidents using ML  
+  
+  
+DATA EXPLORATION SUMMARY
+========================================================
+
+```{r, echo=TRUE }
+adata <-read.csv("./Data/2007_ACCIDENT2007-FullDataSet.csv",header = TRUE)
+```
+Number of Accident Observations: `r nrow(adata)`  
+
+* AVERAGES:    
+Total Persons Involved: `r round(mean(adata$PERSONS),2)`   
+Pedestrians-Only Count: `r round(mean(adata$PEDS),2)`   
+Highway Width (Lane Count): `r round(mean(adata$NO_LANES),2)`   
+Speed Limit (mph): `r round(mean(adata$SP_LIMIT),2)`   
+Fatality Count: `r round(mean(adata$FATALS),2)`   
+Drunk Driver Count: `r round(mean(adata$DRUNK_DR),2)`   
+   
+* MAXIMUMS:      
+Total Persons Involved: `r max(adata$PERSONS)`   
+Pedestrians-Only Count: `r max(adata$PEDS)`   
+Speed Limit (mph): `r max(adata$SP_LIMIT)`   
+Fatality Count: `r max(adata$FATALS)`   
+Drunk Driver Count: `r max(adata$DRUNK_DR)`   
+
+STATE-WISE MAXIMUMS
+========================================================
+```{r, echo=FALSE }
+require(ggplot2)
+library(reshape2)
+library(sqldf)
+
+adata_summary <- sqldf('SELECT STATE, MAX(PERSONS) AS PERSONS, MAX(PEDS) as PEDS, MAX(DRUNK_DR) as DRUNK_DR, MAX(FATALS) as FATALS FROM adata GROUP BY STATE ORDER BY 1 DESC')
+
+
+ggplot(data = adata_summary, aes(x = adata_summary$STATE)) +
+  geom_line(aes(y = adata_summary$PERSONS, colour = "PERSONS")) +
+  geom_line(aes(y = adata_summary$PEDS, colour = "PEDS")) +
+  geom_line(aes(y = adata_summary$FATALS, colour = "FATALS")) +
+  geom_line(aes(y = adata_summary$DRUNK_DR, colour = "DRUNK_DR")) +
+  scale_colour_manual("", breaks = c("PERSONS", "PEDS", "FATALS","DRUNK_DR"),
+                        values = c("red", "green", "blue","black")) +
+ scale_x_continuous("State Code", limits = c(1,50)) + scale_y_continuous("Various Counts", limits = c(0,150))
+
+```
+
+GSA State Codes are [here] (http://htmlpreview.github.io/?https://github.com/fernandesdonald/ddp2/blob/master/GSA_STATE_CODES.html).
+
+REFERENCES
+========================================================
+* Data file is sourced from ==>  https://wiki.csc.calpoly.edu/datasets/wiki/HighwayAccidents
+* Shiny Examples  ==> http://shiny.rstudio.com/gallery/  
+
+  
+  
+  
+  
+  
+  
+    
+              
+      
+  
+  
+
+  
+  
+
+                      T H A N K      Y O U   
+
